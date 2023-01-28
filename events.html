@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<title>HW6</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		
+
+</head>
+<body>
+	<div class="form-container">
+		<p id="event_heading">Events Search</p>
+		
+		<div class="form-elements">
+			<hr id="horizontal line">
+			<form>
+			<br>
+			<br>
+			<div  class="form-row">
+				<label class="form-labels">Keyword</label>
+			</div>
+		      
+		      <br>
+
+		    <div  class="form-row">
+				<input type="text" class="form-input" name="keyword">
+			</div>
+		     
+		     <br>
+
+		    <div class="form-row">
+		    	  <div class="float-child">
+		    	  	<div  class="form-row">
+						<label class="form-labels">Distance(miles)</label>
+					</div>
+				      
+				      <br>
+
+				    <div  class="form-row">
+						<input type="text"  placeholder="10" class="form-input-short" name="keyword">
+					</div>
+				    
+				  </div>
+				  <div class="float-child">
+					<div  class="form-row">
+						<label class="form-labels">Category</label>
+					</div>
+				      
+				      <br>
+
+				    <div  class="form-row">
+						<!-- <input type="text" class="form-input-short" style='width:100%;' name="keyword"> -->
+
+						<select name="cars" class="form-input-short" style='width:100%; color:white;'>
+							<option value="music">Default</option>
+							  <option value="music">Music</option>
+							  <option value="sports">Sports</option>
+							  <option value="art">Art</option>
+							  <option value="theater">Theater</option>
+							  <option value="film">Film</option>
+							  <option value="miscellaneous">Miscellaneous</option>
+						</select>
+					</div>
+				  </div>
+				
+		   	</div>
+
+		   	<br>
+
+		   	<div  class="form-row">
+				<label class="form-labels">Location</label>&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="checkbox" id="auto-detect" name="auto-detect" value="auto-detect">
+  				<label for="auto-detect" style='color:white; font-family: "Georgia";'>Auto-Detect Location</label>
+			</div>
+		      
+		      <br>
+
+		    <div  class="form-row">
+				<input type="text" class="form-input" name="keyword">
+			</div>
+
+			<br>
+			<br>
+
+			<div  class="form-row">
+		     <button type="submit" id="submit-button"><span id="front-submit">
+			    SEARCH
+			  </span>
+			</button>&nbsp;&nbsp;
+		     <button type="submit" id="clear-button"><span id="front-clear">
+			    CLEAR
+			  </span>
+			</button>
+		    </div>
+
+		    </form>		
+
+		</div>
+
+	</div>
+	
+
+</body>
+
+</html>

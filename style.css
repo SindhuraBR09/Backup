@@ -1,0 +1,153 @@
+body{
+	background-image: url('background.jpg');
+	background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; 
+}
+
+
+.form-container{
+	height: 500px;
+	width:900px;
+	backdrop-filter: blur(30px);
+	background-color: rgba(146, 148, 147, 0.3);  
+	margin: 0 auto;
+	margin-top: 30px;
+	border-radius: 25px;
+	text-align: center;
+
+}
+
+#event_heading{
+	font-family: "Georgia"; 
+	font-size: 50px;
+	margin-top: 10px;
+	margin-bottom: 1px;
+	color:white;
+	font-weight: 300;
+}
+
+.form-elements{
+	height: 400px;
+	margin-left: 30px;
+	margin-right: 30px;
+	text-align:left;
+	position: relative;
+	margin-top:20px;
+
+}
+
+.form-row{
+	margin-top: 1px;
+	margin-bottom:1px;
+
+/*	padding: 10px;*/
+}
+.form-labels{
+	color:#99BFD9;
+	font-family: "Georgia";
+
+	
+}
+
+.form-input{
+	width:100%;
+	border-radius: 8px;
+	height:30px;
+	background: transparent;
+    border: 1px solid white;
+    
+}
+
+.float-parent-element { 
+    width: 100%; 
+
+} 
+.float-child { 
+    float: left; 
+    width: 50%; 
+    height: 100px; 
+    
+/*    display:inline-block;*/
+
+} 
+
+
+
+.form-input-short{
+	width:70%;
+	border-radius: 8px;
+	height:35px;
+	background: transparent;
+  border: 1px solid white;
+  box-sizing: border-box;
+    
+}
+
+
+#submit-button {
+    background: hsl(21, 100%, 50%);
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+
+  }
+
+  #front-submit {
+    display: block;
+    padding: 10px 40px;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: hsl(30, 95%, 48%) ;
+    color: white;
+    transform: translateY(-6px);
+  }
+
+
+  #submit-button {
+    background: #E05A12;
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+
+  }
+
+  #front-submit {
+    display: block;
+    padding: 10px 40px;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #E5751E ;
+    color: white;
+    transform: translateY(-6px);
+  }
+
+  #clear-button {
+    background: #3D4C75;
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+
+  }
+
+  #front-clear {
+    display: block;
+    padding: 10px 40px;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #566EA8 ;
+    color: white;
+    transform: translateY(-6px);
+  }
+
+select option
+{
+    background-color: #33393E;
+    font-family: "Georgia";
+
+}
