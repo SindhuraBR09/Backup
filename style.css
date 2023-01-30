@@ -55,6 +55,7 @@ body{
 	height:30px;
 	background: transparent;
     border: 1px solid white;
+  color: white;
     
 }
 
@@ -80,7 +81,7 @@ body{
 	background: transparent;
   border: 1px solid white;
   box-sizing: border-box;
-    
+   color: white; 
 }
 
 
@@ -149,5 +150,10 @@ select option
 {
     background-color: #33393E;
     font-family: "Georgia";
+    padding: 10px;
 
+}
+
+select{
+	padding: 5px 13px;
 }

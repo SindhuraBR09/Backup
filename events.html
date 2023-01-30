@@ -3,8 +3,14 @@
 	<head>
 		<meta charset="UTF-8"/>
 		<title>HW6</title>
-		<link rel="stylesheet" type="text/css" href="style.css">
-		
+		<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script> -->
+
+		<link rel="stylesheet" type="text/css" href="/static/style.css">
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script type="text/javascript" src="/static/script.js"></script>
+
 
 </head>
 <body>
@@ -13,17 +19,17 @@
 		
 		<div class="form-elements">
 			<hr id="horizontal line">
-			<form>
+			<form  action="#" onsubmit="search();return false">
 			<br>
 			<br>
 			<div  class="form-row">
-				<label class="form-labels">Keyword</label>
+				<label class="form-labels">Keyword<span style="color: red">*</span></label>
 			</div>
 		      
 		      <br>
 
 		    <div  class="form-row">
-				<input type="text" class="form-input" name="keyword">
+				<input type="text" class="form-input"  id="keyword" name="keyword">
 			</div>
 		     
 		     <br>
@@ -37,13 +43,13 @@
 				      <br>
 
 				    <div  class="form-row">
-						<input type="text"  placeholder="10" class="form-input-short" name="keyword">
+						<input type="text"  placeholder="10" class="form-input-short"  id="distance" name="distance">
 					</div>
 				    
 				  </div>
 				  <div class="float-child">
 					<div  class="form-row">
-						<label class="form-labels">Category</label>
+						<label class="form-labels">Category<span style="color: red">*</span></label>
 					</div>
 				      
 				      <br>
@@ -51,7 +57,7 @@
 				    <div  class="form-row">
 						<!-- <input type="text" class="form-input-short" style='width:100%;' name="keyword"> -->
 
-						<select name="cars" class="form-input-short" style='width:100%; color:white;'>
+						<select name="category" class="form-input-short" id="category" style='width:100%; color:white;'>
 							<option value="music">Default</option>
 							  <option value="music">Music</option>
 							  <option value="sports">Sports</option>
@@ -68,31 +74,44 @@
 		   	<br>
 
 		   	<div  class="form-row">
-				<label class="form-labels">Location</label>&nbsp;&nbsp;&nbsp;&nbsp;
-				<input type="checkbox" id="auto-detect" name="auto-detect" value="auto-detect">
+				<label class="form-labels">Location<span style="color: red">*</span></label>&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="checkbox" id="autodetect" name="autodetect" value="autodetect" onclick="locationDetect(this)">
   				<label for="auto-detect" style='color:white; font-family: "Georgia";'>Auto-Detect Location</label>
 			</div>
 		      
-		      <br>
+		    <br>
 
-		    <div  class="form-row">
-				<input type="text" class="form-input" name="keyword">
-			</div>
+		    <div id="auto-loc-disabled">
+		    	<div  class="form-row">
+				<input type="text" class="form-input"  id="location">
+				</div>
+				<br>
+				<br>
+				<div  class="form-row">
+			     <button type="submit" id="submit-button" ><span id="front-submit">
+				    SEARCH
+				  </span>
+				</button>&nbsp;&nbsp;
+			     <button type="submit" id="clear-button"><span id="front-clear">
+				    CLEAR
+				  </span>
+				</button>
+			    </div>
+		   	</div>
 
-			<br>
-			<br>
-
-			<div  class="form-row">
-		     <button type="submit" id="submit-button"><span id="front-submit">
-			    SEARCH
-			  </span>
-			</button>&nbsp;&nbsp;
-		     <button type="submit" id="clear-button"><span id="front-clear">
-			    CLEAR
-			  </span>
-			</button>
-		    </div>
-
+		   	<div id="auto-loc-enabled" style="display:none">
+		    	<br>
+				<div  class="form-row">
+			     <button type="submit" id="submit-button"><span id="front-submit">
+				    SEARCH
+				  </span>
+				</button>&nbsp;&nbsp;
+			     <button type="submit" id="clear-button"><span id="front-clear">
+				    CLEAR
+				  </span>
+				</button>
+			    </div>
+		   	</div>		    
 		    </form>		
 
 		</div>
