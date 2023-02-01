@@ -27,7 +27,7 @@ function search(){
         "keyword": keyword,
         "distance":distance,
         "category":category,
-        "locatio":location
+        "location":location
     };
 
     // TODO : handle empty fields
@@ -69,67 +69,197 @@ async function geocodeAddress(searchInfo) {
         convertToGeohash(response, searchInfo);
 }
 
-async function convertToGeohash(response, searchInfo) {
+ function convertToGeohash(response, searchInfo) {
 
     const lat = response.results[0].geometry.location.lat;
     const lng = response.results[0].geometry.location.lng;
+    if(!searchInfo["distance"]){
+        searchInfo["distance"]="10";
+    }
 
-    console.log(lat);
-    // const request = new XMLHttpRequest();
-    // request.open('GET',  `/getGeohash?latitude=`+lat+ `&longitude=`+lng, true);
-    // // request.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-    // request.send();
-
-    const url = "/getGeohash?latitude="+lat+ "&longitude="+lng;
-    let geohashcode = await fetch(url)
+    const url = "/getEventList?latitude="+lat+"&longitude="+lng+"&keyword="+searchInfo["keyword"]+"&location="+searchInfo["location"]+"&distance="+searchInfo["distance"]+"&category="+searchInfo["category"];
+    fetch(url)
       .then(
-        response => response.text() // .json(), .blob(), etc.
+        response => response.json() // .json(), .blob(), etc.
       ).then(
-        text => {return text;} // Handle here
+        json => { extractEventsInfo(json);} // Handle here
       );
 
-      console.log(geohashcode);
-      searchInfo["geohash"] = geohashcode
-      getEventDetails(searchInfo)
 
 }
 
-async function getEventDetails(searchInfo){
 
-    let keyword = searchInfo["keyword"];
-    let distance = searchInfo["distance"];
-    let category = searchInfo["category"];
-    let geohash = searchInfo["geohash"];
-    let location = searchInfo["location"];
-    let apiKey = "4NgXj6Gc7DhC0BAoWYJlXmqZPGCr1V4u";
-
-    const category_map = {
-        "Music":"KZFzniwnSyZfZ7v7nJ",
-        "Sports": "KZFzniwnSyZfZ7v7nE",
-        "Arts": "KZFzniwnSyZfZ7v7na",
-        "Theatre": "KZFzniwnSyZfZ7v7na",
-        "Film": "KZFzniwnSyZfZ7v7nn",
-        "Miscellaneous": "KZFzniwnSyZfZ7v7n1"
+function extractEventsInfo(eventInfo){
+    if(eventInfo.page.totalElements > 0){
+        console.log(eventInfo._embedded.events.length);
+        console.log(eventInfo);
+        displayEventsTable(eventInfo);
 
     }
 
-    let segment = category_map[category]
-    const ticketMasterURL = `https://app.ticketmaster.com/discovery/v2/events.json?apikey=${apiKey}&keyword=${encodeURIComponent(location)}&segmentId=${segment}&radius=${distance}&unit=miles&geoPoint=${geohash}`;
+    else{
+        console.log("No Results")
+        if (document.contains(document.getElementById("events"))) {
+            document.getElementById("events").remove();
+        }
 
-    let data = await fetch(ticketMasterURL)
-                              .then((response) => response.json())
-                              .then((data) => {
-                                return data;
+        var body = document.getElementsByTagName("body")[0];
+        var div = document.getElementById("events-table");
 
-                              })
-                              .catch((error) => {
-                                console.error('Error:', error);
-                                return error;
-                              });
+        div.style.display = "block";
+        var childDiv = document.createElement("div");
+        childDiv.setAttribute('id','no-results');
+        childDiv.style.alignText = 'center';
+        childDiv.style.display= 'inline-block';
+        childDiv.style.margin= '0 auto';
+        childDiv.style.padding= '10px';
+        childDiv.style.backgroundColor = 'white';
+        childDiv.style.color = 'red';
         
-    console.log(data);
+        let text = document.createTextNode('No Records found');
+        childDiv.appendChild(text);
+        div.appendChild(childDiv);
 
-    
+
+    }
+}
+
+function displayEventsTable(eventInfo){
+
+    if (document.contains(document.getElementById("no-results"))) {
+            document.getElementById("no-results").remove();
+        }
+
+    var headers = ['Date', 'Icon', 'Event', 'Genre', 'Venue'];
+    var body = document.getElementsByTagName("body")[0];
+    var div = document.getElementById("events-table");
+
+    div.style.display = "block";
+
+      // create elements <table> and a <tbody>
+    var tbl = document.createElement("table");
+    tbl.setAttribute('id','events');
+    var thead = document.createElement('thead');
+    tbl.appendChild(thead);
+
+
+    for(let i = 0; i < 5; i++){
+        var th = document.createElement("th");
+        th.appendChild(document.createTextNode(headers[i]));
+        th.style.border = '1px solid black';
+        th.style.backgroundColor='grey';
+        thead.appendChild(th);
+    }
+ 
+    var tblBody = document.createElement("tbody");
+    tbl.appendChild(tblBody);
+
+    tbl.style.width = '100%';
+    tbl.style.border = '1px solid black';
+    tbl.style.backgroundColor = 'white';
+    tbl.style.borderSpacing= 0;
+    tbl.style.borderCollapse= 'collapse';
+
+    let totalEvents = Math.min(20, eventInfo._embedded.events.length);
+
+    let events = eventInfo._embedded.events;
+
+    for (let i = 0; i < totalEvents; i++) {
+
+            let eventName = events[i]["name"];
+            let eventIcon = "";
+            let eventDate = events[i].dates.start.localDate;
+            let eventVenue = "";
+            let eventGenre = "";
+            if("images" in events[i] && events[i].images.length > 0){
+                eventIcon = events[i].images[0].url;
+            }
+            if("venues" in events[i]._embedded){
+                eventVenue = events[i]._embedded.venues[0].name;
+            }
+
+            if("attractions" in events[i]._embedded && "classifications" in events[i]._embedded.attractions[0]){
+                eventGenre=events[i]._embedded.attractions[0].classifications[0].segment.name
+            }
+
+            var tr = document.createElement('tr');
+            tblBody.appendChild(tr);
+
+            var td = document.createElement('td');
+            td.style.border = '1px solid black';
+            td.appendChild(document.createTextNode(eventDate));
+            tr.appendChild(td);
+
+            var td = document.createElement('td');
+            td.style.border = '1px solid black';
+            td.style.width = "150px";
+            td.style.height = "70px";
+            var img = document.createElement("img");
+            img.src = eventIcon;
+            img.style.width = "100px";
+            img.style.height = "50px";
+            // img.aspectRatio= 'auto';
+            img.alt = eventIcon;
+            td.appendChild(img);
+            tr.appendChild(td);
+
+            var td = document.createElement('td');
+            td.style.border = '1px solid black';
+            var link = document.createElement("a");
+            // link.appendChild(document.createTextNode(eventName));
+            link.innerHTML = eventName;
+            link.setAttribute('id', events[i].id);
+            link.style.textDecoration = "none";
+
+            link.addEventListener("mouseover", function(e) {
+                    console.log('hover');
+                    e.target.style.color = "purple";
+                  });
+
+            link.addEventListener("mouseleave", function(e) {
+                    e.target.style.color = "black";
+                  });
+
+            link.addEventListener('click', function(e) {
+                    getEventDetails(e.target.id);
+                });
+            link.onClick = 'test()';
+            td.appendChild(link);
+            tr.appendChild(td);
+
+            var td = document.createElement('td');
+            td.style.border = '1px solid black';
+            td.appendChild(document.createTextNode(eventGenre));
+            tr.appendChild(td);
+
+            var td = document.createElement('td');
+            td.style.border = '1px solid black';
+            td.appendChild(document.createTextNode(eventVenue));
+            tr.appendChild(td);
+
+  }
+
+  div.appendChild(tbl);
+}
+
+function getEventDetails(eventId){
+
+    const url = "/getEventDetails?eventid="+eventId;
+    fetch(url)
+      .then(
+        response => response.json() // .json(), .blob(), etc.
+      ).then(
+        json => { console.log(json); displayEventInfo(json)} // Handle here
+      );
+}
+
+function displayEventInfo(eventDetails){
+
+    var div = document.createElement("div");
+    div.setAttribute('class', 'form-container');
+
+    document.getElementsByTagName("body")[0].appendChild(div);
+    div.scrollIntoView();
 
 
 }
