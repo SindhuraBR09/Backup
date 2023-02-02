@@ -91,44 +91,19 @@ async function geocodeAddress(searchInfo) {
 
 function extractEventsInfo(eventInfo){
     if(eventInfo.page.totalElements > 0){
-        console.log(eventInfo._embedded.events.length);
         console.log(eventInfo);
         displayEventsTable(eventInfo);
 
     }
-
     else{
         console.log("No Results")
-        if (document.contains(document.getElementById("events"))) {
-            document.getElementById("events").remove();
-        }
-
-        var body = document.getElementsByTagName("body")[0];
-        var div = document.getElementById("events-table");
-
-        div.style.display = "block";
-        var childDiv = document.createElement("div");
-        childDiv.setAttribute('id','no-results');
-        childDiv.style.alignText = 'center';
-        childDiv.style.display= 'inline-block';
-        childDiv.style.margin= '0 auto';
-        childDiv.style.padding= '10px';
-        childDiv.style.backgroundColor = 'white';
-        childDiv.style.color = 'red';
-        
-        let text = document.createTextNode('No Records found');
-        childDiv.appendChild(text);
-        div.appendChild(childDiv);
-
-
+        displayNoResult();
     }
 }
 
 function displayEventsTable(eventInfo){
 
-    if (document.contains(document.getElementById("no-results"))) {
-            document.getElementById("no-results").remove();
-        }
+    cleanUp()
 
     var headers = ['Date', 'Icon', 'Event', 'Genre', 'Venue'];
     var body = document.getElementsByTagName("body")[0];
@@ -212,7 +187,6 @@ function displayEventsTable(eventInfo){
             link.style.textDecoration = "none";
 
             link.addEventListener("mouseover", function(e) {
-                    console.log('hover');
                     e.target.style.color = "purple";
                   });
 
@@ -242,6 +216,27 @@ function displayEventsTable(eventInfo){
   div.appendChild(tbl);
 }
 
+function displayNoResult() {
+    cleanUp();
+    var body = document.getElementsByTagName("body")[0];
+    var div = document.getElementById("events-table");
+
+    div.style.display = "block";
+    var childDiv = document.createElement("div");
+    childDiv.setAttribute('id','no-results');
+    childDiv.style.alignText = 'center';
+    childDiv.style.display= 'inline-block';
+    childDiv.style.margin= '0 auto';
+    childDiv.style.padding= '10px';
+    childDiv.style.backgroundColor = 'white';
+    childDiv.style.color = 'red';
+    
+    let text = document.createTextNode('No Records found');
+    childDiv.appendChild(text);
+    div.appendChild(childDiv);
+
+}
+
 function getEventDetails(eventId){
 
     const url = "/getEventDetails?eventid="+eventId;
@@ -255,11 +250,178 @@ function getEventDetails(eventId){
 
 function displayEventInfo(eventDetails){
 
-    var div = document.createElement("div");
-    div.setAttribute('class', 'form-container');
+    if (document.contains(document.getElementById("event-details"))) {
+        document.getElementById("event-details").remove();
+    }
 
+    var eventTeams = []
+    var eventVenue = ""
+    var eventGenre = []
+    var priceRanges = [] //TODO
+    var eventDate = []
+    eventDate.push(eventDetails.dates.start.localDate);
+    eventDate.push(eventDetails.dates.start.localTime);
+
+    var ticketStatus = eventDetails.dates.status.code;
+    var buyTicket = eventDetails.url;
+    var seatMap = "";
+    var eventName = eventDetails.name;
+
+    if('_embedded' in eventDetails &&  "attractions" in eventDetails._embedded && eventDetails._embedded.attractions.length > 0){
+        for(let i=0; i < eventDetails._embedded.attractions.length;i++){
+            eventTeams.push(eventDetails._embedded.attractions[i].name)
+        }
+    }
+
+    if('_embedded' in eventDetails && 'venues' in eventDetails._embedded && eventDetails._embedded.venues.length >0){
+        eventVenue = eventDetails._embedded.venues[0].name;
+    }
+    
+    if('classifications' in eventDetails){
+        for(let i=0; i < eventDetails.classifications.length; i++){
+            eventGenre.push(eventDetails.classifications[i].genre.name)
+            eventGenre.push(eventDetails.classifications[i].segment.name)
+            eventGenre.push(eventDetails.classifications[i].subGenre.name)
+        }
+    }
+
+    if('type' in eventDetails){
+        eventGenre.push(eventDetails.type);
+    }
+
+    if('subType' in eventDetails){
+        eventGenre.push(eventDetails.subType)
+    }
+
+    if('seatmap' in eventDetails && 'staticUrl' in eventDetails.seatmap){
+        seatMap = eventDetails.seatmap.staticUrl;
+    }
+
+    var div = document.createElement("div");
+    div.setAttribute('class', 'event-details-container');
+    div.setAttribute('id', 'event-details');
+
+    var nameTag = document.createElement("p");
+    nameTag.setAttribute('id', 'event_name');
+    nameTag.appendChild(document.createTextNode(eventName));
+    div.appendChild(nameTag);
+
+    var leftdiv = document.createElement("div");
+    leftdiv.setAttribute('class', 'leftcolumn');
+    
+
+    var rightDiv = document.createElement("div");
+    rightDiv.setAttribute('class', 'rightcolumn');
+    
+
+    ////////// Adding content /////////////////////
+
+    var dateTag = document.createElement("p")
+    dateTag.setAttribute('class', 'eventDetailTags')
+    dateTag.appendChild(document.createTextNode("Date"));
+    leftdiv.appendChild(dateTag)
+
+    var dateValue = document.createElement("p");
+    dateValue.setAttribute('class','eventDetailValues');
+    dateValue.appendChild(document.createTextNode(eventDate.join(' ')));
+    leftdiv.appendChild(dateValue);
+
+    var artistTag = document.createElement("p")
+    artistTag.setAttribute('class', 'eventDetailTags')
+    artistTag.appendChild(document.createTextNode("Artist/Team"));
+    leftdiv.appendChild(artistTag)
+
+    var artistValue = document.createElement("p");
+    artistValue.setAttribute('class','eventDetailValues');
+    artistValue.appendChild(document.createTextNode(eventTeams.join(' | ')));
+    leftdiv.appendChild(artistValue);
+
+    var venueTag = document.createElement("p")
+    venueTag.setAttribute('class', 'eventDetailTags')
+    venueTag.appendChild(document.createTextNode("Venue"));
+    leftdiv.appendChild(venueTag)
+
+    var venueValue = document.createElement("p");
+    venueValue.setAttribute('class','eventDetailValues');
+    venueValue.appendChild(document.createTextNode(eventVenue));
+    leftdiv.appendChild(venueValue);
+
+    var genreTag = document.createElement("p")
+    genreTag.setAttribute('class', 'eventDetailTags')
+    genreTag.appendChild(document.createTextNode("Genres"));
+    leftdiv.appendChild(genreTag)
+
+    var genreValue = document.createElement("p");
+    genreValue.setAttribute('class','eventDetailValues');
+    genreValue.appendChild(document.createTextNode(eventGenre.join(' | ')));
+    leftdiv.appendChild(genreValue);
+
+    if (priceRanges.length > 0){
+
+        var priceTag = document.createElement("p")
+        priceTag.setAttribute('class', 'eventDetailTags')
+        priceTag.appendChild(document.createTextNode("Price Ranges"));
+        leftdiv.appendChild(priceTag)
+
+        var priceValue = document.createElement("p");
+        priceValue.setAttribute('class','eventDetailValues');
+        priceValue.appendChild(document.createTextNode(priceRanges.join('-')));
+        leftdiv.appendChild(priceValue);
+
+    }
+
+
+    var ticketStatusTag = document.createElement("p")
+    ticketStatusTag.setAttribute('class', 'eventDetailTags')
+    ticketStatusTag.appendChild(document.createTextNode("Ticket Status"));
+    leftdiv.appendChild(ticketStatusTag)
+
+    var ticketStatusValue = document.createElement("p");
+    ticketStatusValue.setAttribute('class','eventDetailValues');
+    ticketStatusValue.appendChild(document.createTextNode(ticketStatus));
+    leftdiv.appendChild(ticketStatusValue);
+
+    var buyAtTag = document.createElement("p")
+    buyAtTag.setAttribute('class', 'eventDetailTags')
+    buyAtTag.appendChild(document.createTextNode("Buy Ticket At"));
+    leftdiv.appendChild(buyAtTag)
+
+    var buyAtValue = document.createElement("p");
+    buyAtValue.setAttribute('class','eventDetailValues');
+    buyAtValue.appendChild(document.createTextNode(buyTicket));
+    leftdiv.appendChild(buyAtValue);
+
+    var img = document.createElement("img");
+    img.src = seatMap;
+    img.style.width = "500px";
+    img.style.height = "400px";
+    // img.alt = seatMap;
+    // img.style.margin = 'auto'
+    // img.style.top = "50%";
+    // img.style.position = "absolute";
+    rightDiv.appendChild(img);
+
+
+    div.appendChild(leftdiv);
+    div.appendChild(rightDiv);
     document.getElementsByTagName("body")[0].appendChild(div);
     div.scrollIntoView();
+
+
+}
+
+function cleanUp() {
+    if (document.contains(document.getElementById("no-results"))) {
+            document.getElementById("no-results").remove();
+        }
+
+    if (document.contains(document.getElementById("events"))) {
+            document.getElementById("events").remove();
+        }
+
+    if (document.contains(document.getElementById("event-details"))) {
+            document.getElementById("event-details").remove();
+        }
 
 
 }
