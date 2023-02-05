@@ -38,7 +38,6 @@ def getGeohash():
 			'unit':'miles', 
 			'geoPoint':hashed}
 
-	# print(query)
 	response = requests.get('https://app.ticketmaster.com/discovery/v2/events.json', params=query)
 	return response.json()
 
@@ -48,8 +47,23 @@ def getGeohash():
 def getEventDetails():
 	eventId = request.args.get('eventid')
 
-	query = {'apikey':"4NgXj6Gc7DhC0BAoWYJlXmqZPGCr1V4u"		}
+	query = {
+			'apikey':"4NgXj6Gc7DhC0BAoWYJlXmqZPGCr1V4u"
+			}
 	url='https://app.ticketmaster.com/discovery/v2/events/'+ str(eventId)
+	response = requests.get(url, params=query)
+	return response.json()
+
+@app.route('/getVenueDetails/', methods=['GET'])
+def getVenueDetails():
+	venueName = request.args.get('venueName')
+	# venueNameEncoded= urllib.parse.quote(venueName)
+
+	query = {
+			'apikey':"4NgXj6Gc7DhC0BAoWYJlXmqZPGCr1V4u",
+			'keyword':venueName
+			}
+	url='https://app.ticketmaster.com/discovery/v2/venues/'
 	response = requests.get(url, params=query)
 	return response.json()
 

@@ -77,7 +77,7 @@ async function geocodeAddress(searchInfo) {
         searchInfo["distance"]="10";
     }
 
-    const url = "/getEventList?latitude="+lat+"&longitude="+lng+"&keyword="+searchInfo["keyword"]+"&location="+searchInfo["location"]+"&distance="+searchInfo["distance"]+"&category="+searchInfo["category"];
+    const url = "/getEventList?latitude="+lat+"&longitude="+lng+"&keyword="+encodeURIComponent(searchInfo["keyword"])+"&location="+encodeURIComponent(searchInfo["location"])+"&distance="+searchInfo["distance"]+"&category="+searchInfo["category"];
     fetch(url)
       .then(
         response => response.json() // .json(), .blob(), etc.
@@ -197,7 +197,7 @@ function displayEventsTable(eventInfo){
             link.addEventListener('click', function(e) {
                     getEventDetails(e.target.id);
                 });
-            link.onClick = 'test()';
+            // link.onClick = 'test()';
             td.appendChild(link);
             tr.appendChild(td);
 
@@ -254,11 +254,25 @@ function displayEventInfo(eventDetails){
         document.getElementById("event-details").remove();
     }
 
+    if (document.contains(document.getElementById("outerVenueDiv"))) {
+        document.getElementById("outerVenueDiv").remove();
+    }
+
+    if (document.contains(document.getElementById("arrow_container"))) {
+        document.getElementById("arrow_container").remove();
+    }
+
+    if (document.contains(document.getElementById("showVenueTag"))) {
+        document.getElementById("showVenueTag").remove();
+    }
+
     var eventTeams = []
+    var eventTeamsUrl = []
     var eventVenue = ""
     var eventGenre = []
     var priceRanges = [] //TODO
     var eventDate = []
+    var currencyType = ''
     eventDate.push(eventDetails.dates.start.localDate);
     eventDate.push(eventDetails.dates.start.localTime);
 
@@ -270,6 +284,12 @@ function displayEventInfo(eventDetails){
     if('_embedded' in eventDetails &&  "attractions" in eventDetails._embedded && eventDetails._embedded.attractions.length > 0){
         for(let i=0; i < eventDetails._embedded.attractions.length;i++){
             eventTeams.push(eventDetails._embedded.attractions[i].name)
+            if('url'in eventDetails._embedded.attractions[i]){
+                eventTeamsUrl.push(eventDetails._embedded.attractions[i].url)
+            }
+            else{
+                eventTeamsUrl.push('');
+            }
         }
     }
 
@@ -291,6 +311,12 @@ function displayEventInfo(eventDetails){
 
     if('subType' in eventDetails){
         eventGenre.push(eventDetails.subType)
+    }
+
+    if('priceRanges' in eventDetails){
+        priceRanges.push(eventDetails.priceRanges[0].min)
+        priceRanges.push(eventDetails.priceRanges[0].max)
+        currencyType = eventDetails.priceRanges[0].currency
     }
 
     if('seatmap' in eventDetails && 'staticUrl' in eventDetails.seatmap){
@@ -333,7 +359,33 @@ function displayEventInfo(eventDetails){
 
     var artistValue = document.createElement("p");
     artistValue.setAttribute('class','eventDetailValues');
-    artistValue.appendChild(document.createTextNode(eventTeams.join(' | ')));
+    
+    console.log(eventTeams)
+    console.log(eventTeamsUrl)
+    for(let i =0; i< eventTeams.length; i++){
+
+        if(eventTeamsUrl[i]){
+            var l = document.createElement("a");
+            l.style.textDecoration = 'none';
+            l.href = eventTeamsUrl[i];
+            l.style.color = "#66C2F6";
+            l.target = '_blank';
+            l.appendChild(document.createTextNode(eventTeams[i]));
+            if(i != 0){
+                artistValue.appendChild(document.createTextNode(" | "))
+            }
+            artistValue.appendChild(l);
+        }
+
+        else{
+            if (i != 0){
+                artistValue.appendChild(document.createTextNode(" | "))            
+            }
+            artistValue.appendChild(document.createTextNode(eventTeams[i]))
+        }        
+
+    }
+    
     leftdiv.appendChild(artistValue);
 
     var venueTag = document.createElement("p")
@@ -365,7 +417,7 @@ function displayEventInfo(eventDetails){
 
         var priceValue = document.createElement("p");
         priceValue.setAttribute('class','eventDetailValues');
-        priceValue.appendChild(document.createTextNode(priceRanges.join('-')));
+        priceValue.appendChild(document.createTextNode(priceRanges.join('-')+ " "+currencyType));
         leftdiv.appendChild(priceValue);
 
     }
@@ -388,27 +440,213 @@ function displayEventInfo(eventDetails){
 
     var buyAtValue = document.createElement("p");
     buyAtValue.setAttribute('class','eventDetailValues');
-    buyAtValue.appendChild(document.createTextNode(buyTicket));
+    var buyLink = document.createElement("a");
+    buyLink.style.textDecoration = 'none';
+    buyLink.href = buyTicket;
+    buyLink.target = '_blank';
+    buyLink.style.color = "#66C2F6";
+    buyLink.appendChild(document.createTextNode("Ticketmaster"));
+    buyAtValue.appendChild(buyLink);
     leftdiv.appendChild(buyAtValue);
 
-    var img = document.createElement("img");
-    img.src = seatMap;
-    img.style.width = "500px";
-    img.style.height = "400px";
-    // img.alt = seatMap;
-    // img.style.margin = 'auto'
-    // img.style.top = "50%";
-    // img.style.position = "absolute";
-    rightDiv.appendChild(img);
+    if(seatMap){
+        var img = document.createElement("img");
+        img.src = seatMap;
+        img.style.width = "80%";
+        img.style.height = "400px";
+        rightDiv.appendChild(img);
+
+    }
+    
 
 
     div.appendChild(leftdiv);
     div.appendChild(rightDiv);
     document.getElementsByTagName("body")[0].appendChild(div);
+
+    /// create Show Venue Button 
+    var showVenueTag = document.createElement("p")
+    showVenueTag.setAttribute('id', 'showVenueTag')
+    showVenueTag.appendChild(document.createTextNode("Show Venue Details"))
+    document.getElementsByTagName("body")[0].appendChild(showVenueTag);
+
+    var arrowContainer = document.createElement("div")
+    arrowContainer.setAttribute('id', 'arrow_container')
+    
+    var arrow = document.createElement("div")
+    arrow.setAttribute('class', 'arrow')
+    arrow.setAttribute('id', eventVenue);
+    
+    arrow.addEventListener('click', function(e) {
+            getVenueDetails(e.target.id);
+        });
+
+    arrowContainer.appendChild(arrow)
+    document.getElementsByTagName("body")[0].appendChild(arrowContainer);
+
+
     div.scrollIntoView();
 
 
 }
+
+function getVenueDetails(venueName){
+    console.log(venueName);
+    const url = "/getVenueDetails?venueName="+encodeURIComponent(venueName);
+    fetch(url)
+      .then(
+        response => response.json() // .json(), .blob(), etc.
+      ).then(
+        json => { console.log(json); displayVenueInfo(json)} // Handle here
+      );
+}
+
+function displayVenueInfo(venueDetails){
+    if (document.contains(document.getElementById("arrow_container"))) {
+        document.getElementById("arrow_container").remove();
+    }
+
+    if (document.contains(document.getElementById("showVenueTag"))) {
+        document.getElementById("showVenueTag").remove();
+    }
+
+    var venueName = ""
+    var address = "N/A"
+    var city = "N/A"
+    var state="N/A"
+    var zipCode = "N/A"
+    var upcomingEventsUrl = "";
+
+    if('_embedded' in venueDetails && 'venues' in venueDetails._embedded && venueDetails._embedded.venues.length > 0){
+
+        var v =  venueDetails._embedded.venues[0]
+
+        if ('name' in v){
+            venueName = v.name
+        }
+
+        if('address' in v && 'line1' in v.address){
+            address = v.address.line1
+        }
+
+        if ('city' in v){
+            city = v.city.name
+        }
+
+        if('state' in v && 'stateCode' in v.state){
+            state=  v.state.stateCode
+        }
+        
+
+        if('postalCode' in v){
+            zipCode = v.postalCode
+        }
+
+        if('url' in v){
+            upcomingEventsUrl = v.url
+        }
+
+
+    }
+
+
+    var outerVenueDiv = document.createElement("div")
+    outerVenueDiv.setAttribute('id', 'outerVenueDiv')
+
+    var innerVenueDiv = document.createElement("div")
+    innerVenueDiv.setAttribute('id', 'innerVenueDiv')
+
+    var venueNameTag = document.createElement("p")
+    venueNameTag.setAttribute('id', 'venueNameTag')
+    venueNameTag.appendChild(document.createTextNode(venueName))
+    innerVenueDiv.appendChild(venueNameTag)
+
+    var detailsTbl = document.createElement('table')
+    detailsTbl.setAttribute('id', 'detailsTbl')
+
+    var row = document.createElement('tr')
+
+    var dleft = document.createElement('td')
+    dleft.style.borderRight = '1px solid black';
+    dleft.style.width = '500px';
+    dleft.style.verticalAlign = 'top'
+    
+    var dright = document.createElement('td')
+    dright.style.width = '500px';
+    dright.style.verticalAlign = 'top'
+    dright.style.textAlign = 'center'
+
+    var innerLeftDiv = document.createElement('div')
+
+
+    var innerTbl = document.createElement('table')
+    innerTbl.setAttribute('id', 'innerTbl')
+
+    var innerrow1 = document.createElement('tr')
+    innerrow1.style.verticalAlign = 'top'
+    var innerleft = document.createElement('td')
+    innerleft.style.width = '100px';
+    innerleft.style.verticalAlign = 'top'
+    innerleft.style.textAlign = 'center';
+    var addressTag = document.createElement("p")
+    addressTag.appendChild(document.createTextNode("Address:"))
+    addressTag.style.fontWeight = 'bold'
+    addressTag.style.marginTop='0px'
+    innerleft.appendChild(addressTag)
+
+    var innerright = document.createElement('td')
+    innerright.style.width = '200px';
+    innerright.style.verticalAlign = 'top'
+    var addressValue = document.createElement('p')
+    addressValue.style.marginTop='0px'
+    addressValue.appendChild(document.createTextNode(address))
+    addressValue.appendChild(document.createElement('br'))
+    addressValue.appendChild(document.createTextNode(city+', '+state))
+    addressValue.appendChild(document.createElement('br'))
+    addressValue.appendChild(document.createTextNode(zipCode))
+    innerright.appendChild(addressValue)
+
+    var moreEvents = document.createElement('a')
+    moreEvents.style.textDecoration = 'none';
+    moreEvents.href = upcomingEventsUrl;
+    moreEvents.style.color = "#66C2F6";
+    moreEvents.target = '_blank';
+    moreEvents.appendChild(document.createTextNode("More events at this venue"))
+    dright.appendChild(moreEvents)
+
+    var pmaps = document.createElement('p')
+    pmaps.style.textAlign = 'center'
+    var openInmaps = document.createElement('a')
+    openInmaps.setAttribute('id', address);
+    openInmaps.style.textDecoration = 'none';
+    openInmaps.href = 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(address);
+    openInmaps.style.color = "#66C2F6";
+    openInmaps.style.margin = '0 auto'
+    openInmaps.target = '_blank';
+    openInmaps.appendChild(document.createTextNode("Open in Google Maps"))    
+    pmaps.appendChild(openInmaps)
+
+    innerrow1.appendChild(innerleft)
+    innerrow1.appendChild(innerright)
+    innerTbl.appendChild(innerrow1)
+
+    innerLeftDiv.appendChild(innerTbl)
+    innerLeftDiv.appendChild(pmaps)
+    dleft.appendChild(innerLeftDiv)
+    // dleft.appendChild(innerTbl)
+    // dleft.appendChild(pmaps)
+
+    row.appendChild(dleft)
+    row.appendChild(dright)
+    detailsTbl.appendChild(row)    
+    innerVenueDiv.appendChild(detailsTbl)
+
+    outerVenueDiv.appendChild(innerVenueDiv)
+    document.getElementsByTagName("body")[0].appendChild(outerVenueDiv);
+
+}
+
+
 
 function cleanUp() {
     if (document.contains(document.getElementById("no-results"))) {
@@ -422,6 +660,54 @@ function cleanUp() {
     if (document.contains(document.getElementById("event-details"))) {
             document.getElementById("event-details").remove();
         }
+
+    if (document.contains(document.getElementById("arrow_container"))) {
+        document.getElementById("arrow_container").remove();
+    }
+
+    if (document.contains(document.getElementById("showVenueTag"))) {
+        document.getElementById("showVenueTag").remove();
+    }
+
+    
+
+    if (document.contains(document.getElementById("outerVenueDiv"))) {
+        document.getElementById("outerVenueDiv").remove();
+    }
+
+
+}
+
+function clearscreen(){
+    console.log("clear")
+
+    document.getElementById('eventForm').reset()
+
+    if (document.contains(document.getElementById("no-results"))) {
+            document.getElementById("no-results").remove();
+        }
+
+    if (document.contains(document.getElementById("events"))) {
+            document.getElementById("events").remove();
+        }
+
+    if (document.contains(document.getElementById("event-details"))) {
+            document.getElementById("event-details").remove();
+        }
+
+    if (document.contains(document.getElementById("arrow_container"))) {
+        document.getElementById("arrow_container").remove();
+    }
+
+    if (document.contains(document.getElementById("showVenueTag"))) {
+        document.getElementById("showVenueTag").remove();
+    }
+
+    
+
+    if (document.contains(document.getElementById("outerVenueDiv"))) {
+        document.getElementById("outerVenueDiv").remove();
+    }
 
 
 }

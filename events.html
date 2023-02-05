@@ -19,7 +19,7 @@
 		
 		<div class="form-elements">
 			<hr id="horizontal line">
-			<form  action="#" onsubmit="search();return false">
+			<form  id="eventForm" action="#" onsubmit="search();return false">
 			<br>
 			<br>
 			<div  class="form-row">
@@ -92,7 +92,7 @@
 				    SEARCH
 				  </span>
 				</button>&nbsp;&nbsp;
-			     <button type="submit" id="clear-button"><span id="front-clear">
+			     <button type="button" onclick="clearscreen()" id="clear-button"><span id="front-clear">
 				    CLEAR
 				  </span>
 				</button>
@@ -106,7 +106,7 @@
 				    SEARCH
 				  </span>
 				</button>&nbsp;&nbsp;
-			     <button type="submit" id="clear-button"><span id="front-clear">
+			     <button  id="clear-button" onClick="clear()"><span id="front-clear">
 				    CLEAR
 				  </span>
 				</button>
