@@ -3,9 +3,7 @@
 	<head>
 		<meta charset="UTF-8"/>
 		<title>HW6</title>
-		<!-- <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script> -->
+		
 
 		<link rel="stylesheet" type="text/css" href="/static/style.css">
 		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -18,9 +16,8 @@
 		<p id="event_heading">Events Search</p>
 		
 		<div class="form-elements">
-			<hr id="horizontal line">
+			<hr id="horizontal_line">
 			<form  id="eventForm" action="#" onsubmit="search();return false">
-			<br>
 			<br>
 			<div  class="form-row">
 				<label class="form-labels">Keyword<span style="color: red">*</span></label>
@@ -29,7 +26,7 @@
 		      <br>
 
 		    <div  class="form-row">
-				<input type="text" class="form-input"  id="keyword" name="keyword">
+				<input type="text" class="form-input"  id="keyword" name="keyword" autocomplete="off" required>
 			</div>
 		     
 		     <br>
@@ -43,7 +40,7 @@
 				      <br>
 
 				    <div  class="form-row">
-						<input type="text"  placeholder="10" class="form-input-short"  id="distance" name="distance">
+						<input type="number"  placeholder="10" class="form-input-short"  id="distance" name="distance">
 					</div>
 				    
 				  </div>
@@ -58,11 +55,10 @@
 						<!-- <input type="text" class="form-input-short" style='width:100%;' name="keyword"> -->
 
 						<select name="category" class="form-input-short" id="category" style='width:100%; color:white;'>
-							<option value="music">Default</option>
+							<option value="default">Default</option>
 							  <option value="music">Music</option>
 							  <option value="sports">Sports</option>
-							  <option value="art">Art</option>
-							  <option value="theater">Theater</option>
+							  <option value="art">Art & Theater</option>
 							  <option value="film">Film</option>
 							  <option value="miscellaneous">Miscellaneous</option>
 						</select>
@@ -83,7 +79,7 @@
 
 		    <div id="auto-loc-disabled">
 		    	<div  class="form-row">
-				<input type="text" class="form-input"  id="location">
+				<input type="text" class="form-input"  id="location" autocomplete="off" required>
 				</div>
 				<br>
 				<br>

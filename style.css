@@ -7,8 +7,8 @@ body{
 
 
 .form-container{
-	height: 500px;
-	width:800px;
+	height: 450px;
+	width:700px;
 	backdrop-filter: blur(30px);
 	background-color: rgba(146, 148, 147, 0.3);  
 	margin: 0 auto;
@@ -20,7 +20,7 @@ body{
 
 .events-table-container{
   height:auto;
-  width:1200px;
+  width:1000px;
   margin: 0 auto;
   margin-top: 30px;
   text-align: center;
@@ -31,7 +31,7 @@ body{
 
 #event_heading{
 	font-family: "Georgia"; 
-	font-size: 50px;
+	font-size: 45px;
 	margin-top: 10px;
 	margin-bottom: 1px;
 	color:white;
@@ -44,7 +44,7 @@ body{
 	margin-right: 30px;
 	text-align:left;
 	position: relative;
-	margin-top:20px;
+	margin-top:5px;
 
 }
 
@@ -66,7 +66,7 @@ body{
 	border-radius: 8px;
 	height:30px;
 	background: transparent;
-    border: 1px solid white;
+  border: 1px solid white;
   color: white;
     
 }
@@ -171,7 +171,7 @@ select{
 }
 
 .event-details-container{
-  height: 700px;
+/*  height: 600px;*/
   width:1000px;
   backdrop-filter: blur(30px);
   background-color: rgba(146, 148, 147, 0.3);  
@@ -179,31 +179,37 @@ select{
   margin-top: 30px;
   border-radius: 25px;
   text-align: center;
+  min-height: 100px;
+  overflow: hidden;
 
 }
 .leftcolumn {
   float: left;
-  width: 50%;
-  height: 500px; 
+  width: 40%;
+/*  height: 500px; */
+  min-height: 100px;
+  overflow: hidden;
   text-align:left;
+  margin-bottom: 20px;
   
 }
 
 .rightcolumn{
-  width: 50%;
-  height: 500px;
+  width: 60%;
+  height: 450px;
   display: flex;
   align-items: center;
   justify-content: center;
   float: right;
+  margin-bottom: 20px;
 }
 
 #event_name{
-  font-family: " Arial, sans-serif;"; 
+  font-family: Arial, sans-serif;
   font-size: 30px;
-  margin-top: 50px;
+  margin-top: 20px;
 /*  margin-bottom: 1px;*/
-  padding-top: 50px;
+  padding-top: 20px;
   padding-left: 10px;
   padding-right: 10px;
   color:white;
@@ -211,20 +217,21 @@ select{
 }
 
 .eventDetailTags{
-  font-family: " Arial, sans-serif;"; 
+  font-family: Arial, sans-serif;
   font-size: 20px;
   /*margin-top: 50px;
   margin-bottom: 1px; #66C2F6 */ 
   padding-left: 40px;
   margin-bottom: 5px;
-  color:#A4F9E2;
+/*  color:#A4F9E2;*/
+  color: #65FFE5;
   font-weight: 200;
 
 }
 
 .eventDetailValues{
 
-  font-family: " Arial, sans-serif;"; 
+  font-family: Arial, sans-serif;
   font-size: 15px;
   /*margin-top: 50px;
   margin-bottom: 1px; #66C2F6 */ 
@@ -272,7 +279,7 @@ select{
 }
 
 #outerVenueDiv{
-  height: 350px;
+/*  height: 450px;*/
   width:1000px;
   background-color: white;  
   margin: 0 auto;
@@ -281,17 +288,21 @@ select{
   display: flex;
   align-items: center;
   justify-content: center;
-
+  min-height: 100px;
+  overflow: hidden;
 }
 
 #innerVenueDiv{
 
-  height: 300px;
+/*  height: 400px;*/
   width:950px;
   background-color: white;  
   border-radius: 25px;
   border: 2px solid black;
-
+  min-height: 100px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 #venueNameTag{
@@ -308,9 +319,6 @@ select{
 
 }
 
-
-
-
 #detailsTbl{
   width: '100%';
   height: 150px;
@@ -318,7 +326,8 @@ select{
   border-collapse: 'collapse';
   margin: 0 auto;
   padding-top: 50px;
-  font-size: 18px;  
+  font-size: 18px;
+  margin-bottom: 20px;  
 
 }
 
@@ -333,4 +342,17 @@ select{
 /*  padding-top: 10px;*/
   font-family: Times New Roman;
   padding-top: 0;
+}
+
+#ticketStatusDiv{
+
+  border: none;
+  border-radius: 10px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: inline-block;
+  margin-left: 40px;
+
 }
