@@ -1,0 +1,83 @@
+.main-navbar{
+    background-color:black;
+    position: fixed;
+    top: 0;
+}
+
+#formContainer{
+    margin: 0 auto;
+    width: 60%;
+    backdrop-filter: blur(30px);
+	background-color: rgba(146, 148, 147, 0.3);  
+	margin-top: 10px;
+	border-radius: 25px;
+    padding-bottom: 20px;
+    text-align: center;	
+}
+
+#mainForm{
+    width: '60%';
+}
+
+#event_search{
+    font-family: "Georgia"; 
+	font-size: 45px;
+	margin-bottom: 1px;
+	color:white;
+	font-weight: 300;
+    text-align: center;
+    padding-top: 30px;
+}
+
+.formLabel{
+    color:white;
+    text-align: left;
+    
+}
+
+.MuiInputBase-input  {
+    height: 9px !important;
+    border-radius: 2;
+  }
+
+table{
+    margin-top: 50px;
+    text-align: center;
+}
+table tr td img
+{
+    height: 50px;
+    width: 50px;
+}
+
+.table-responsive{
+    width:80%;
+    margin: 0 auto;
+}
+
+.eventDetailDiv{
+    text-align: center;
+    width:80%;
+    margin: 0 auto;
+    margin-top: 50px;
+    backdrop-filter: blur(30px);
+	background-color: rgba(146, 148, 147, 0.3);
+}
+
+.eventTabHeading{
+  font-family: Arial, sans-serif;
+  font-size: 30;
+  /* padding-left: 40px; */
+  margin-bottom: 5px;
+  color: #65FFE5;
+  font-weight: 200;
+
+}
+
+.eventTabValue{
+    font-family: Arial, sans-serif;
+    font-size: 15;
+    color:white;
+    font-weight: 200;
+    margin-top: 5px;
+}
