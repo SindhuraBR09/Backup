@@ -10,6 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import axios from "axios";
 import AppBar  from '@mui/material/AppBar';
 import Events  from './eventsTab';
+import Artists from './artistsTab';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -49,6 +50,10 @@ const EventList = (props) => {
     const [selectedEvent, setSelectedEvent] = useState('');
     const [eventDetails, setEventDetails] = useState({});
     const [selectedTab, setSelectedTab] = useState(0);
+    const [selectedEventArtists, setSelectedEventArtists] = useState([])
+    const [artistDetailsFetched, setArtistDetailsFetched] = useState(false);
+    const [fetchArtistAlbums, setFetchArtistAlbums] = useState(true);
+    var i = 0;
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
@@ -108,9 +113,10 @@ const EventList = (props) => {
             'id':eventId
         })
        
-    }
+    }    
 
     const handleEventClick = (event) => {
+        console.log('handleEventClick')
         setSelectedEvent(event.id);
         setShowDetails(true);
         console.log(selectedEvent)
@@ -120,22 +126,73 @@ const EventList = (props) => {
         setSelectedEvent('')
         setEventDetails({})
         setShowDetails(false);
+        setSelectedTab(0)
+        setSelectedEventArtists([])
+        setArtistDetailsFetched(false); 
+        setFetchArtistAlbums(true);       
+        
       };
 
       useEffect(() => {
+                const fetchArtistDetails = async (eventData) => {
+                console.log('fetchArtistDetails')
+                var Teams = []
+                if('classifications' in eventDetails && eventDetails.classifications.length > 0){
+                    if('segment' in eventDetails.classifications[0] && 'name' in  eventDetails.classifications[0].segment){
+                        if(eventDetails.classifications[0].segment.name.toLowerCase() != 'music'){
+                            return;
+                        }
+                          
+                    }
+                }
+                if('_embedded' in eventData &&  "attractions" in eventData._embedded && eventData._embedded.attractions.length > 0){
+                    for(let i=0; i < eventData._embedded.attractions.length;i++){
+                        Teams.push(eventData._embedded.attractions[i].name)
+                    }
+                }  
+
+
+                const temp = [];
+                for (let i = 0; i < Teams.length; i++) {
+                    const artist = Teams[i];
+                    try{
+                        const albumResponse = await axios.get(`/getArtistAlbums?name=${artist}`);
+                        const artistDetails = albumResponse.data;
+                        temp.push(artistDetails);
+                    }
+                    catch (error)
+                    {
+                        console.log('Artist not found')
+                    }
+                    
+                }
+                setSelectedEventArtists(temp); 
+                console.log(temp)
+        };
+
         const fetchEventDetails = async () => {
+            console.log('fetchEventDetails')
             const params = {
                 keyword: selectedEvent
             }
             const response = await axios.get('/getEventDetails', {params});      
             console.log(response.data)
             setEventDetails(response.data);
-        };
+        //     if (!artistDetailsFetched) 
+        //     { 
+        //         setArtistDetailsFetched(true); 
+        //         await fetchArtistDetails(response.data);
+        //   }            
+        };        
     
         if (showDetails) {
-          fetchEventDetails();
+         fetchEventDetails();          
         }
       }, [selectedEvent, showDetails]);
+
+      const handleFetchArtistAlbums = () => {
+        setFetchArtistAlbums(false);
+      };
 
     const renderEvents = (event, index) => {
         return ( 
@@ -155,7 +212,9 @@ const EventList = (props) => {
         <div>
             {showDetails ? (
                 <div className='eventDetailDiv'>
-                    <h2 style={{color:"white"}}>{eventDetails.name}</h2>
+                    <p style={{color:'white', textAlign:'left', paddingLeft:10, paddingTop:10}}>&lt;<button onClick={handleBackClick} style={{ all: 'unset',color:'white', cursor: 'pointer',textDecoration: 'underline'}}>Back</button></p>
+                
+                    <h2 style={{color:"white", padding:30}}>{eventDetails.name}</h2>
                     <AppBar sx={{backgroundColor:'#559A8E'}} position="static">
                         <Tabs value={selectedTab} onChange={handleTabChange} textColor="white" variant="fullWidth" aria-label="tabs">
                             <Tab label="Events" {...a11yProps(0)}/>
@@ -164,10 +223,9 @@ const EventList = (props) => {
                         </Tabs>
                     </AppBar>
                         <TabPanel value={selectedTab} index={0}><Events eventTabDetails={eventDetails}/></TabPanel>
-                        <TabPanel value={selectedTab} index={1}>Artist/Teams</TabPanel>
+                        <TabPanel value={selectedTab} index={1}><Artists eventDetails={eventDetails} fetchArtistAlbums={fetchArtistAlbums} handleFetchArtistAlbums={handleFetchArtistAlbums}/></TabPanel>
                         <TabPanel value={selectedTab} index={2}>Venue</TabPanel>
                     
-                    <Button onClick={handleBackClick}>Back</Button>
                 </div>
             ) : 
             (<Table responsive striped bordered hover variant="dark">

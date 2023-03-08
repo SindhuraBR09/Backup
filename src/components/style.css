@@ -81,3 +81,8 @@ table tr td img
     font-weight: 200;
     margin-top: 5px;
 }
+
+.btn-link:hover{
+    box-shadow: unset !important;
+    outline: 0 !important;
+}
