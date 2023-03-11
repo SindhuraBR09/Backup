@@ -11,6 +11,9 @@ import axios from "axios";
 import AppBar  from '@mui/material/AppBar';
 import Events  from './eventsTab';
 import Artists from './artistsTab';
+import Venue from './venueTab';
+import SwipeableViews from 'react-swipeable-views';
+import { useTheme } from '@mui/material/styles';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -53,8 +56,10 @@ const EventList = (props) => {
     const [selectedEventArtists, setSelectedEventArtists] = useState([])
     const [artistDetailsFetched, setArtistDetailsFetched] = useState(false);
     const [fetchArtistAlbums, setFetchArtistAlbums] = useState(true);
+    const [venueDetails, setVenueDetails] = useState([])
     var i = 0;
-
+    const theme = useTheme();
+  
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
     }
@@ -129,12 +134,13 @@ const EventList = (props) => {
         setSelectedTab(0)
         setSelectedEventArtists([])
         setArtistDetailsFetched(false); 
-        setFetchArtistAlbums(true);       
+        setFetchArtistAlbums(true); 
+        setVenueDetails([])      
         
       };
 
       useEffect(() => {
-                const fetchArtistDetails = async (eventData) => {
+            const fetchArtistDetails = async (eventData) => {
                 console.log('fetchArtistDetails')
                 var Teams = []
                 if('classifications' in eventDetails && eventDetails.classifications.length > 0){
@@ -168,22 +174,37 @@ const EventList = (props) => {
                 }
                 setSelectedEventArtists(temp); 
                 console.log(temp)
-        };
-
-        const fetchEventDetails = async () => {
-            console.log('fetchEventDetails')
-            const params = {
-                keyword: selectedEvent
+            };
+            
+            const fetchVenueDetails = async (eventData) => {
+                if('_embedded' in eventData && 'venues' in eventData._embedded && eventData._embedded.venues.length >0){
+                    var eventVenue = eventData._embedded.venues[0].name;
+                    const params = {
+                        venue: eventVenue
+                    }
+                    const response = await axios.get('/getVenueDetails', {params});      
+                    console.log(response.data)
+                    setVenueDetails(response.data);                    
+                }
             }
-            const response = await axios.get('/getEventDetails', {params});      
-            console.log(response.data)
-            setEventDetails(response.data);
-        //     if (!artistDetailsFetched) 
-        //     { 
-        //         setArtistDetailsFetched(true); 
-        //         await fetchArtistDetails(response.data);
-        //   }            
-        };        
+
+            const fetchEventDetails = async () => {
+                console.log('fetchEventDetails')
+                const params = {
+                    keyword: selectedEvent
+                }
+                const response = await axios.get('/getEventDetails', {params});      
+                console.log(response.data)
+                setEventDetails(response.data);
+                fetchVenueDetails(response.data)
+
+            //     if (!artistDetailsFetched) 
+            //     { 
+            //         setArtistDetailsFetched(true); 
+            //         await fetchArtistDetails(response.data);
+            //   }            
+        
+            };        
     
         if (showDetails) {
          fetchEventDetails();          
@@ -222,9 +243,18 @@ const EventList = (props) => {
                             <Tab label="Venue" {...a11yProps(2)}/>
                         </Tabs>
                     </AppBar>
-                        <TabPanel value={selectedTab} index={0}><Events eventTabDetails={eventDetails}/></TabPanel>
-                        <TabPanel value={selectedTab} index={1}><Artists eventDetails={eventDetails} fetchArtistAlbums={fetchArtistAlbums} handleFetchArtistAlbums={handleFetchArtistAlbums}/></TabPanel>
-                        <TabPanel value={selectedTab} index={2}>Venue</TabPanel>
+                    <SwipeableViews
+                            axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                            index={selectedTab}
+                            onChangeIndex={handleTabChange}
+                        >
+                            <TabPanel value={selectedTab} index={0}><Events eventTabDetails={eventDetails} dir={theme.direction}/></TabPanel>
+                            {/* <TabPanel value={selectedTab} index={1}><Artists eventDetails={eventDetails} fetchArtistAlbums={fetchArtistAlbums} handleFetchArtistAlbums={handleFetchArtistAlbums}/></TabPanel> */}
+                            <TabPanel value={selectedTab} index={1}><Artists eventDetails={eventDetails} artistDetails={selectedEventArtists} dir={theme.direction}/></TabPanel>
+                            
+                            <TabPanel value={selectedTab} index={2} dir={theme.direction}><Venue venueDetails={venueDetails}/></TabPanel>
+                            
+                        </SwipeableViews>
                     
                 </div>
             ) : 

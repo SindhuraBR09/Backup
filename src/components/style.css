@@ -86,3 +86,19 @@ table tr td img
     box-shadow: unset !important;
     outline: 0 !important;
 }
+
+#artistPicture{
+    height: 50;
+    width: 50;
+    border-radius: 50%;
+}
+
+#artistAlbumImages{
+    height: 40;
+    width: 40;
+}
+
+.carousel-indicators{
+    visibility: hidden;
+}
+
