@@ -3,14 +3,22 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import Search from './components/search';
+import Favorites from './components/favorites';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Search/>
-
+    <BrowserRouter>
+        <Routes>
+          <Route exact path="/" element={<Search/>}/>
+          <Route exact path="/search" element={<Search/>}/>
+          <Route exact path="/favorites" element={<Favorites/>}/>     
+        </Routes>
+      </BrowserRouter>
   </React.StrictMode>
 );
 
