@@ -4,10 +4,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from "react-bootstrap/Image";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTwitter,faSquareFacebook } from '@fortawesome/free-brands-svg-icons';
 
 const Events = (props) => {
     const eventDetails = props.eventTabDetails
-
     var eventTeams = []
     var eventTeamsUrl = []
     var eventVenue = ""
@@ -18,16 +19,20 @@ const Events = (props) => {
     var seatMap = "";    
     var ticketStatus = '';
 
+    var ticketStatusColorMap={
+        'onsale': ['green','On Sale'],
+        'offsale': ['red', 'Off Sale'],
+        'cancelled': ['black','Cancelled'],
+        'postponed': ['orange', 'Postponed'],
+         'rescheduled': ['orange', 'Rescheduled']
+    }
+    var ticketStatusColor = 'red';
+    
     var buyTicket =  'url' in eventDetails? eventDetails.url:'';
     var eventName = 'name' in eventDetails? eventDetails.name: '';
-
-    // const renderArtists = (team, index) => {
-    //     console.log(team.link)            
-    //     return ( 
-    //         <p key={index} style={{display:'inline'}} > {team.name} |</p>
-    //      );
-    // }
-
+    var eventUrl = 'url' in eventDetails? eventDetails.url:'';
+    var eventId  = 'id' in eventDetails? eventDetails.id:'';
+    
     if('dates' in eventDetails && 'start' in eventDetails.dates && 'localDate' in eventDetails.dates.start){
         eventDate.push(eventDetails.dates.start.localDate);
     }
@@ -40,11 +45,6 @@ const Events = (props) => {
     if('_embedded' in eventDetails &&  "attractions" in eventDetails._embedded && eventDetails._embedded.attractions.length > 0){
         for(let i=0; i < eventDetails._embedded.attractions.length;i++){
             eventTeams.push(eventDetails._embedded.attractions[i].name)
-            // var teamLink=''
-            // if('url'in eventDetails._embedded.attractions[i]){
-            //     teamLink = eventDetails._embedded.attractions[i].url
-            // }
-            // eventTeams.push({name:eventDetails._embedded.attractions[i].name, link:teamLink})
         }
     }
 
@@ -106,33 +106,64 @@ const Events = (props) => {
 
     if ('dates' in eventDetails && 'status' in eventDetails.dates && 'code' in eventDetails.dates.status){
         ticketStatus= eventDetails.dates.status.code;
+        try{
+            var arr = ticketStatusColorMap[ticketStatus]
+            ticketStatusColor = arr[0]
+            ticketStatus = arr[1]
+        }
+        catch{
+            ticketStatusColor = 'red'
+        }
     }
     if('seatmap' in eventDetails && 'staticUrl' in eventDetails.seatmap){
         seatMap = eventDetails.seatmap.staticUrl;
+    }
+
+    const shareOnFB = () => {
+        const shareURL = `https://www.facebook.com/sharer.php?u=${encodeURIComponent(eventUrl)}`
+        window.open(shareURL, '_blank');
+      };
+
+    const shareOnTwitter = () => {
+        const shareURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check ${eventName}%0A`)}&url=${encodeURIComponent(eventUrl)}`;
+        window.open(shareURL, '_blank');
     }
 
     return (  
         <Container>
             <Row  style={{marginTop:"20px"}} className='justify-content-md-center justify-content-xs-center'>
                 <Col xs={12} md={6}>
-                    <p className='eventTabHeading'>Date</p>
-                    <p className='eventTabValue'>{eventDate.join(' ')}</p>
-                    <p className='eventTabHeading'>Artists/Teams</p>
-                    <p className='eventTabValue'>{eventTeams.join(' | ')}</p>
-                    <p className='eventTabHeading'>Venue</p>
-                    <p className='eventTabValue'>{eventVenue}</p>
-                    <p className='eventTabHeading'>Genre</p>
-                    <p className='eventTabValue'>{eventGenre.join(' | ')}</p>
-                    <p className='eventTabHeading'>Price Ranges</p>
-                    <p className='eventTabValue'>{priceRanges.join(' - ')} {currencyType}</p>
-                    <p className='eventTabHeading'>Ticket Status</p>
-                    <p className='eventTabValue'>{ticketStatus}</p>
+                    {eventDate.length > 0&& <p className='eventTabHeading'>Date</p>}
+                    {eventDate.length >0 && <p className='eventTabValue'>{eventDate.join(' ')}</p>}
+                    {eventTeams.length > 0 && <p className='eventTabHeading'>Artists/Teams</p>}
+                    {eventTeams.length > 0&& <p className='eventTabValue'>{eventTeams.join(' | ')}</p>}
+                    {eventVenue && <p className='eventTabHeading'>Venue</p>}
+                    {eventVenue && <p className='eventTabValue'>{eventVenue}</p>}
+                    {eventGenre.length >0 && <p className='eventTabHeading'>Genre</p>}
+                    {eventGenre.length > 0 && <p className='eventTabValue'>{eventGenre.join(' | ')}</p>}
+                    {priceRanges.length > 0 && <p className='eventTabHeading'>Price Ranges</p>}
+                    {priceRanges.length > 0 && <p className='eventTabValue'>{priceRanges.join(' - ')} {currencyType}</p>}
+                    {ticketStatus && <p className='eventTabHeading'>Ticket Status</p>}
+
+                    {ticketStatus && 
+                        <div id="ticketStatusDiv" style={{backgroundColor:ticketStatusColor }}>
+                            <p id='ticket-status' >
+                            {ticketStatus}                            
+                        </p>
+                        </div>
+                        
+                    }
 
                 </Col>
                 <Col xs={12} md={6}>
                     <Image src={seatMap} fluid/>
                 </Col>
             </Row>
+            <br />
+            <p className='eventTabValue' style={{textAlign:'center'}}>Share On:&nbsp;&nbsp;
+                <FontAwesomeIcon icon={faTwitter} color="#00ACEE" size="2x"  onClick={shareOnTwitter} />
+                <FontAwesomeIcon icon={faSquareFacebook} style={{paddingLeft:10}} color="blue" size="2x" onClick={shareOnFB} />
+            </p>
         </Container>
     );
 }

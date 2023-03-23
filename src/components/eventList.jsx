@@ -12,8 +12,11 @@ import AppBar  from '@mui/material/AppBar';
 import Events  from './eventsTab';
 import Artists from './artistsTab';
 import Venue from './venueTab';
-import SwipeableViews from 'react-swipeable-views';
+// import SwipeableViews from 'react-swipeable-views';
+import SwipeableViews from '../react-swipeable-views/src'
 import { useTheme } from '@mui/material/styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faV } from '@fortawesome/free-solid-svg-icons';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -53,10 +56,9 @@ const EventList = (props) => {
     const [selectedEvent, setSelectedEvent] = useState('');
     const [eventDetails, setEventDetails] = useState({});
     const [selectedTab, setSelectedTab] = useState(0);
-    const [selectedEventArtists, setSelectedEventArtists] = useState([])
-    const [artistDetailsFetched, setArtistDetailsFetched] = useState(false);
-    const [fetchArtistAlbums, setFetchArtistAlbums] = useState(true);
+    const [selectedEventArtists, setSelectedEventArtists] = useState(null)
     const [venueDetails, setVenueDetails] = useState([])
+    const [favorites, setFavorites] = useState([]);
     var i = 0;
     const theme = useTheme();
   
@@ -132,9 +134,7 @@ const EventList = (props) => {
         setEventDetails({})
         setShowDetails(false);
         setSelectedTab(0)
-        setSelectedEventArtists([])
-        setArtistDetailsFetched(false); 
-        setFetchArtistAlbums(true); 
+        setSelectedEventArtists(null)
         setVenueDetails([])      
         
       };
@@ -182,7 +182,8 @@ const EventList = (props) => {
                     const params = {
                         venue: eventVenue
                     }
-                    const response = await axios.get('/getVenueDetails', {params});      
+                    const response = await axios.get('/getVenueDetails', {params});
+                    console.log('Venue Details')      
                     console.log(response.data)
                     setVenueDetails(response.data);                    
                 }
@@ -196,13 +197,8 @@ const EventList = (props) => {
                 const response = await axios.get('/getEventDetails', {params});      
                 console.log(response.data)
                 setEventDetails(response.data);
+                fetchArtistDetails(response.data)
                 fetchVenueDetails(response.data)
-
-            //     if (!artistDetailsFetched) 
-            //     { 
-            //         setArtistDetailsFetched(true); 
-            //         await fetchArtistDetails(response.data);
-            //   }            
         
             };        
     
@@ -211,15 +207,20 @@ const EventList = (props) => {
         }
       }, [selectedEvent, showDetails]);
 
-      const handleFetchArtistAlbums = () => {
-        setFetchArtistAlbums(false);
-      };
+      useEffect(() => {
+        const storedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        setFavorites(storedFavorites);
+      }, []);
+
+    //   const handleFetchArtistAlbums = () => {
+    //     setFetchArtistAlbums(false);
+    //   };
 
     const renderEvents = (event, index) => {
         return ( 
             <tr key={index}>
                 <td>{event.date}<br/>{event.time}</td>
-                <td><Image src={event.icon} alt="" /></td>
+                <td><Image src={event.icon} alt="" style={{width:'60%'}} /></td>
                 <td key={event.name} onClick={() => handleEventClick(event)}>{event.name}</td>
                 <td>{event.genre}</td>
                 <td>{event.venue}</td>
@@ -227,17 +228,105 @@ const EventList = (props) => {
          );
     }
     
+    const toggleFavorite = () => {
+        if(!eventDetails){
+            return
+        }
+        var eventId = eventDetails.id
+        var eventName = eventDetails.name
+        var eventDate = ''
+        var eventGenre = []
+        var eventVenue = ''
+        if('dates' in eventDetails && 'start' in eventDetails.dates && 'localDate' in eventDetails.dates.start){
+            eventDate = eventDetails.dates.start.localDate
+        }
+
+        if('classifications' in eventDetails && eventDetails.classifications.length > 0){
+            if('segment' in eventDetails.classifications[0] && 'name' in  eventDetails.classifications[0].segment){
+                if(eventDetails.classifications[0].segment.name.toLowerCase() != 'undefined'){
+                    eventGenre.push(eventDetails.classifications[0].segment.name)
+                }
+                  
+            }
+            if('genre' in eventDetails.classifications[0] && 'name' in eventDetails.classifications[0].genre){
+                if(eventDetails.classifications[0].genre.name.toLowerCase() != 'undefined'){
+                    eventGenre.push(eventDetails.classifications[0].genre.name)
+                }
+                
+            }
+    
+            if('subGenre' in eventDetails.classifications[0] && 'name' in eventDetails.classifications[0].subGenre){
+    
+                if(eventDetails.classifications[0].subGenre.name.toLowerCase() != 'undefined'){
+                    eventGenre.push(eventDetails.classifications[0].subGenre.name)
+                }
+               
+            }
+    
+            if('type' in eventDetails.classifications[0] && 'name' in eventDetails.classifications[0].type){
+    
+                if(eventDetails.classifications[0].type.name.toLowerCase() != 'undefined'){
+                    eventGenre.push(eventDetails.classifications[0].type.name)
+                }
+               
+            }
+    
+            if('subType' in eventDetails.classifications[0] && 'name' in eventDetails.classifications[0].subType){
+    
+                if(eventDetails.classifications[0].subType.name.toLowerCase() != 'undefined'){
+                    eventGenre.push(eventDetails.classifications[0].subType.name)
+                }
+               
+            }
+                
+        }
+
+        if('_embedded' in eventDetails && 'venues' in eventDetails._embedded && eventDetails._embedded.venues.length >0){
+            eventVenue = eventDetails._embedded.venues[0].name;
+        }
+
+        if(favorites && favorites.some(favorite => favorite.id === eventId)){
+            const updatedFavorites = favorites.filter(event => event.id !== eventId);
+            localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+            setFavorites(updatedFavorites)
+        }
+        else{
+            console.log('here')
+            const newEntry = {
+                id: eventId,
+                name: eventName,
+                date: eventDate,
+                genre: eventGenre,
+                venue: eventVenue
+              };
+
+            const updatedFavorites = [...favorites, newEntry];
+            setFavorites(updatedFavorites);
+            localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        } 
+        
+      };
 
     return (  
 
-        <div>
+        <div className='eventsDiv'>
             {showDetails ? (
                 <div className='eventDetailDiv'>
                     <p style={{color:'white', textAlign:'left', paddingLeft:10, paddingTop:10}}>&lt;<button onClick={handleBackClick} style={{ all: 'unset',color:'white', cursor: 'pointer',textDecoration: 'underline'}}>Back</button></p>
                 
-                    <h2 style={{color:"white", padding:30}}>{eventDetails.name}</h2>
+                    <h2 style={{color:"white", padding:30}}>{eventDetails.name}&nbsp;
+                    <button onClick={toggleFavorite} style={{ all: 'unset',color:'white', cursor: 'pointer'}}>
+                    <FontAwesomeIcon
+                            icon={faHeart}
+                            onClick={toggleFavorite}
+                            style={{ color: favorites.find((fav) => fav.id === eventDetails.id) ? 'red' : 'white', cursor: 'pointer' }}
+                        />
+                    </button>
+                    </h2>
+                    
+                    
                     <AppBar sx={{backgroundColor:'#559A8E'}} position="static">
-                        <Tabs value={selectedTab} onChange={handleTabChange} textColor="white" variant="fullWidth" aria-label="tabs">
+                        <Tabs value={selectedTab} onChange={handleTabChange} textColor="inherit" variant="fullWidth" aria-label="tabs">
                             <Tab label="Events" {...a11yProps(0)}/>
                             <Tab label="Artists/Teams" {...a11yProps(1)}/>
                             <Tab label="Venue" {...a11yProps(2)}/>
@@ -258,14 +347,14 @@ const EventList = (props) => {
                     
                 </div>
             ) : 
-            (<Table responsive striped bordered hover variant="dark">
+            (<Table responsive striped hover variant="dark" >
                 <thead>
                     <tr>
-                        <th>Date/Time</th>
-                        <th>Icon</th>
-                        <th>Event</th>
-                        <th>Genre</th>
-                        <th>Venue</th>
+                    <th style={{borderRadius: '20px 0 0 0', width: '15%' }}>Date/Time</th>
+                    <th style={{ width: '15%' }}>Icon</th>
+                    <th style={{ width: '40%' }}>Event</th>
+                    <th style={{ width: '15%' }}>Genre</th>
+                    <th style={{borderRadius: '0 20px 0 0', width: '15%' }}>Venue</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -7,15 +7,12 @@ import { CircularProgressbar, buildStyles} from "react-circular-progressbar";
   
 
 const Artists = (props) => {
-    // const artistDetails = props.artistDetails
+    const artistDetails = props.artistDetails
     const eventDetails = props.eventDetails
     const [eventName, setEventName] = useState('')
-    const [artistDetails, setArtistDetails] = useState(null)
-    // const artistDetails = props.artistDetails
-    // console.log(artistDetails)
     
     const [index, setIndex] = useState(0);
-    var numberOfArtists = 0;
+    var numberOfArtists = artistDetails.length;
     const handleSelect = (selectedIndex, e) => {
       setIndex(selectedIndex);
     };
@@ -35,46 +32,6 @@ const Artists = (props) => {
           setIndex(index + 1);
         }
       };
-
-      useEffect(() => {
-            const fetchArtistDetails = async () => {
-            var Teams = []
-            if('classifications' in eventDetails && eventDetails.classifications.length > 0){
-                if('segment' in eventDetails.classifications[0] && 'name' in  eventDetails.classifications[0].segment){
-                    if(eventDetails.classifications[0].segment.name.toLowerCase() != 'music'){
-                        return;
-                    }
-                      
-                }
-            }
-            if('_embedded' in eventDetails &&  "attractions" in eventDetails._embedded && eventDetails._embedded.attractions.length > 0){
-                for(let i=0; i < eventDetails._embedded.attractions.length;i++){
-                    Teams.push(eventDetails._embedded.attractions[i].name)
-                }
-            }  
-    
-    
-            const temp = [];
-            for (let i = 0; i < Teams.length; i++) {
-                const artist = Teams[i];
-                try{
-                    const albumResponse = await axios.get(`/getArtistAlbums?name=${artist}`);
-                    const artistDetails = albumResponse.data;
-                    temp.push(artistDetails);
-                }
-                catch (error)
-                {
-                    console.log('Artist not found')
-                }
-                
-            }
-            // console.log(temp)
-            setArtistDetails(temp)
-            numberOfArtists = temp.length
-        };
-
-        fetchArtistDetails()
-      }, []);
 
       if (artistDetails === null) {
         return <p style={{color:'white'}}>Loading artist details...</p>;
