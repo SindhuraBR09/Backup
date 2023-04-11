@@ -1,11 +1,14 @@
 package com.eventsearch.app;
+import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import com.bumptech.glide.Glide;
@@ -16,6 +19,10 @@ public class Eventlist_Adapter extends RecyclerView.Adapter<Eventlist_Adapter.Ev
 
     public Eventlist_Adapter(List<Event> events) {
         this.mEvents = events;
+    }
+
+    public List<Event> getEvents(){
+        return mEvents;
     }
 
     // This method is called when a new ViewHolder is needed
@@ -56,13 +63,15 @@ public class Eventlist_Adapter extends RecyclerView.Adapter<Eventlist_Adapter.Ev
     }
 
     // This class is the ViewHolder that holds the views for each item
-    public static class EventViewHolder extends RecyclerView.ViewHolder {
+    public class EventViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageView;
         public TextView mEventName;
         public TextView mDate;
         public TextView mTime;
         public TextView mVenueName;
         public TextView mGenres;
+
+        public ConstraintLayout mRowLayout;
 
         public EventViewHolder(View v) {
             super(v);
@@ -72,6 +81,21 @@ public class Eventlist_Adapter extends RecyclerView.Adapter<Eventlist_Adapter.Ev
             mTime = v.findViewById(R.id.timeTextView);
             mVenueName = v.findViewById(R.id.venueTextView);
             mGenres = v.findViewById(R.id.genreTextView);
+
+            mRowLayout = v.findViewById(R.id.event_row);
+            mRowLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    Log.d("EventViewHolder", "Event Clicked "+position);
+                    if (position != RecyclerView.NO_POSITION) {
+                        Event clickedEvent = mEvents.get(position);
+                        Intent intent = new Intent(view.getContext(), EventDetailsActivity.class);
+                        intent.putExtra("selected_event", clickedEvent);
+                        view.getContext().startActivity(intent);
+                    }
+                }
+            });
         }
     }
 }
