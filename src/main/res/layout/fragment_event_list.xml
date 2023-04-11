@@ -8,30 +8,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".EventListFragment">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+    >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/back_button"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="Button" />
+
+            <TextView
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/arrow_back_button"
+                android:background="@android:color/transparent"
+                android:textColor="@android:color/black"
+                android:text=" Back to Search"
+                android:padding="10dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/eventlist_fragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+                <TextView
+                    android:id="@+id/no_results_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="No Results Available"
+                    android:textColor="@color/parrot_green"
+                    android:padding="10dp"
+                    android:background="@drawable/curved_rectangle"
+                    android:textSize="18sp"
+                     />
+
+
+            </FrameLayout>
+
+
+
+        </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:indeterminateTint="@color/parrot_green"
+            android:layout_centerInParent="true"
             />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/eventlist_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+    </RelativeLayout>
 
-    </LinearLayout>
+
 
 </FrameLayout>

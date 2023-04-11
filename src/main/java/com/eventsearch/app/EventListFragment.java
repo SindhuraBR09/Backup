@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,6 +24,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -53,6 +55,8 @@ public class EventListFragment extends Fragment {
     RecyclerView recyclerView;
 
     ProgressBar progressBar;
+
+    TextView no_results;
     public EventListFragment() {
         // Required empty public constructor
     }
@@ -93,8 +97,11 @@ public class EventListFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_event_list, container, false);
 
-        Button backButton = view.findViewById(R.id.back_button);
+        TextView backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> getActivity().finish());
+
+        no_results = view.findViewById(R.id.no_results_textview);
+        no_results.setVisibility(View.GONE);
 
         progressBar = view.findViewById(R.id.progress_bar);
         // Set its visibility to VISIBLE
@@ -109,7 +116,6 @@ public class EventListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (getArguments() != null) {
-//            events = getArguments().getString("event_list");
             keyword = getArguments().getString("keyword");
             location = getArguments().getString("location");
             distance = getArguments().getString("distance");
@@ -186,6 +192,9 @@ public class EventListFragment extends Fragment {
                             displayEvents(eventsArray);
                         } else {
                             Log.d("getEvents", "No results");
+                            no_results.setVisibility(View.VISIBLE);
+                            recyclerView.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.GONE);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -198,73 +207,128 @@ public class EventListFragment extends Fragment {
     }
 
     private void displayEvents(JSONArray events){
-        try {
-            mEvents = new ArrayList<>();
-            for (int i = 0; i < events.length(); i++) {
-                JSONObject eventObject = events.getJSONObject(i);
-                Event event = new Event();
-                event.setId(eventObject.getString("id"));
-                event.setName(eventObject.getString("name"));
-                event.setImageUrl(eventObject.optString("url", ""));
 
-                try {
-                    JSONArray classifications = eventObject.getJSONArray("classifications");
-                    if (classifications != null && classifications.length() > 0) {
-                        JSONObject classification = classifications.getJSONObject(0);
-                        if (classification != null) {
-                            JSONObject genreObject = classification.getJSONObject("genre");
-                            if (genreObject != null) {
-                                String genreName = genreObject.getString("name");
-                                if (genreName != null) {
-                                    event.addGenre(genreName);
+        try {
+                mEvents = new ArrayList<>();
+                for (int i = 0; i < events.length(); i++) {
+                    JSONObject eventObject = events.getJSONObject(i);
+                    Event event = new Event();
+                    event.setId(eventObject.getString("id"));
+                    event.setName(eventObject.getString("name"));
+                    event.setImageUrl(eventObject.optString("url", ""));
+
+                    try {
+                        JSONArray classifications = eventObject.getJSONArray("classifications");
+                        if (classifications != null && classifications.length() > 0) {
+                            JSONObject classification = classifications.getJSONObject(0);
+                            if (classification != null) {
+                                JSONObject genreObject = classification.getJSONObject("genre");
+                                if (genreObject != null) {
+                                    String genreName = genreObject.getString("name");
+                                    if (genreName != null) {
+                                        event.addGenre(genreName);
+                                    }
+                                }
+
+                                JSONObject subGenreObject = classification.getJSONObject("subGenre");
+                                if (subGenreObject != null) {
+                                    String subGenreName = subGenreObject.getString("name");
+                                    if (subGenreName != null) {
+                                        event.addGenre(subGenreName);
+                                    }
+                                }
+                                JSONObject segmentObject = classification.getJSONObject("segment");
+                                if (segmentObject != null) {
+                                    String segmentName = segmentObject.getString("name");
+                                    if (segmentName != null) {
+                                        event.addGenre(segmentName);
+                                    }
+                                }
+                                JSONObject typeObject = classification.getJSONObject("type");
+                                if (typeObject != null) {
+                                    String typeName = typeObject.getString("name");
+                                    if (typeName != null) {
+                                        event.addGenre(typeName);
+                                    }
+                                }
+                                JSONObject subTypeObject = classification.getJSONObject("subType");
+                                if (subTypeObject != null) {
+                                    String subtypeName = subTypeObject.getString("name");
+                                    if (subtypeName != null) {
+                                        event.addGenre(subtypeName);
+                                    }
                                 }
                             }
                         }
+                    } catch (JSONException e) {
+                        Log.d("GetEvents: ", e.toString());
+                        // Handle the case where the keys are not present in the JSON object.
                     }
-                } catch (JSONException e) {
-                    Log.d("GetEvents: ", e.toString());
-                    // Handle the case where the keys are not present in the JSON object.
+
+                    JSONArray imagesArray = eventObject.optJSONArray("images");
+                    if (imagesArray != null && imagesArray.length() > 0) {
+                        String imageUrl = imagesArray.getJSONObject(0).optString("url", "");
+                        event.setImageUrl(imageUrl);
+                    }
+
+                    // For setting event date
+                    JSONObject datesObject = eventObject.optJSONObject("dates");
+                    if (datesObject != null) {
+                        JSONObject startObject = datesObject.optJSONObject("start");
+                        if (startObject != null) {
+                            String date = startObject.optString("localDate", "");
+                            event.setDate(date);
+                            String time = startObject.optString("localTime", "");
+                            event.setTime(time);
+                        }
+                        JSONObject status = datesObject.optJSONObject("status");
+                        if (status != null) {
+                            String ts = startObject.optString("code", "");
+                            event.setTicketStatus(ts);
+                        }
+                    }
+                    // For setting event venue
+                    JSONObject embeddedObject = eventObject.optJSONObject("_embedded");
+                    if (embeddedObject != null) {
+                        JSONArray venuesArray = embeddedObject.optJSONArray("venues");
+                        JSONArray artistArray = embeddedObject.optJSONArray("attractions");
+                        if (venuesArray != null && venuesArray.length() > 0) {
+//                            event.setVenueDetails(venuesArray);
+                            String venue = venuesArray.getJSONObject(0).optString("name", "");
+                            event.setVenue(venue);
+                        }
+
+                        if(artistArray != null && artistArray.length() > 0){
+//                            event.setArtistsDetails(artistArray);
+                        }
+                    }
+
+                    JSONArray prObj = eventObject.optJSONArray("priceRanges");
+                    if(prObj != null && prObj.length() > 0){
+                        event.setPriceRanges(prObj);
+                    }
+
+                    JSONObject seatMapObj = eventObject.optJSONObject("seatmap");
+                    if(seatMapObj != null){
+                        String seatmap = seatMapObj.optString("staticUrl");
+                        Log.d("Setting setmap objected ", seatmap);
+                        event.setSeatMap(seatmap);
+                    }
+
+                    mEvents.add(event);
                 }
 
-                JSONArray imagesArray = eventObject.optJSONArray("images");
-                if (imagesArray != null && imagesArray.length() > 0) {
-                    String imageUrl = imagesArray.getJSONObject(0).optString("url", "");
-                    event.setImageUrl(imageUrl);
-                }
 
-                // For setting event date
-                JSONObject datesObject = eventObject.optJSONObject("dates");
-                if (datesObject != null) {
-                    JSONObject startObject = datesObject.optJSONObject("start");
-                    if (startObject != null) {
-                        String date = startObject.optString("localDate", "");
-                        event.setDate(date);
-                        String time = startObject.optString("localTime", "");
-                        event.setTime(time);
-                    }
-                }
-                // For setting event venue
-                JSONObject embeddedObject = eventObject.optJSONObject("_embedded");
-                if (embeddedObject != null) {
-                    JSONArray venuesArray = embeddedObject.optJSONArray("venues");
-                    if (venuesArray != null && venuesArray.length() > 0) {
-                        String venue = venuesArray.getJSONObject(0).optString("name", "");
-                        event.setVenue(venue);
-                    }
-                }
-                mEvents.add(event);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // Initialize the RecyclerView and adapter
-        Eventlist_Adapter adapter = new Eventlist_Adapter(mEvents);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        progressBar.setVisibility(View.GONE);
+            // Initialize the RecyclerView and adapter
+            Eventlist_Adapter adapter = new Eventlist_Adapter(mEvents);
+            recyclerView.setVisibility(View.VISIBLE);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            progressBar.setVisibility(View.GONE);
+            Log.d("DisplayEvents", "Recycle  view displayed");
 
     }
 

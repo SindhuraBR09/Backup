@@ -91,25 +91,4 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-//    public void onBackPressed() {
-//        if (getFragmentManager().getBackStackEntryCount() <= 1) {
-//            super.onBackPressed();
-//        } else {
-//            getFragmentManager().popBackStack();
-//        }
-//    }
-
-//    public void switchToEventListFragment(ArrayList<Event> events) {
-//        EventListFragment eventListFragment = new EventListFragment();
-//        Bundle bundle = new Bundle();
-//        bundle.putParcelableArrayList("event_list", events);
-//        eventListFragment.setArguments(bundle);
-//
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .remove(sf)
-//                .add(eventListFragment, "event_list")
-//                .addToBackStack("event_list")
-//                .commit();
-//    }
 }
