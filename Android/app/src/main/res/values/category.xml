@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_values">
+        <item>All</item>
+        <item>Music</item>
+        <item>Films</item>
+        <item>Sports</item>
+        <item>Art</item>
+        <item>Miscellaneous</item>
+    </string-array>
+</resources>

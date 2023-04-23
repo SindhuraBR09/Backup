@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/artist_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="30dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/curved_rectangle"
+    >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/curved_rectangle"
+            >
+
+            <ImageView
+                android:id="@+id/profilePicture"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="3"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo"
+                />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="10dp">
+
+                    <TextView
+                        android:id="@+id/nameTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:textColor="@android:color/white"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:text="Artist" />
+
+                    <TextView
+                        android:id="@+id/followersTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:textColor="@android:color/white"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:text="Followers" />
+
+                    <TextView
+                        android:id="@+id/spotifyTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:textColor="@android:color/white"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:text="Spotify Link" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="10dp">
+
+                    <TextView
+                        android:id="@+id/popularityTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:textColor="@android:color/white"
+                        android:textAlignment="center"
+                        android:text="Popularity" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center">
+
+                        <ProgressBar
+                            android:id="@+id/progress_bar"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:indeterminateOnly="false"
+                            android:layout_gravity="center"
+                            android:progressDrawable="@drawable/circular_progress"
+                            tools:progress="60" />
+
+                        <TextView
+                            android:id="@+id/text_view_progress"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                            android:textSize="18sp"
+                            android:textColor="@color/white"
+                            android:text="60%"
+                            android:layout_centerInParent="true" />
+
+                    </RelativeLayout>
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@android:color/white"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="20sp"
+            android:layout_marginBottom="20dp"
+            android:textColor="@android:color/white"
+            android:text="Popular Albums" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/curved_rectangle"
+            >
+
+
+            <ImageView
+                android:id="@+id/album1"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="3"
+                android:layout_marginRight="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo" />
+
+            <ImageView
+                android:id="@+id/album2"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="3"
+                android:layout_marginRight="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo" />
+
+            <ImageView
+                android:id="@+id/album3"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:layout_weight="3"
+                android:scaleType="centerCrop"
+                android:src="@drawable/logo" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
